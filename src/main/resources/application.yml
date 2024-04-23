@@ -1,0 +1,26 @@
+
+server:
+    port: 8080
+spring:
+    application:
+        name: Project_Module5
+    #Datasource
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/Project_Module5
+        username: root
+        password: Quy123456
+        hikari:
+            maximum-pool-size: 15
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: none
+            naming:
+                implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate.format_sql: true
+            hibernate.dialect: org.hibernate.dialect.MySQLDialect
+            hibernate.enable_lazy_load_no_trans: true
+            hibernate.current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
