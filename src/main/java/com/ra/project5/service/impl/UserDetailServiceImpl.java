@@ -8,6 +8,8 @@ import com.ra.project5.model.token.TokenRequest;
 import com.ra.project5.model.token.UserDetailsAdapter;
 import com.ra.project5.repository.RoleRepository;
 import com.ra.project5.repository.UserRepository;
+import com.ra.project5.repository.UserRoleRepository;
+import com.ra.project5.service.RoleService;
 import com.ra.project5.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,10 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private UserRoleRepository userRoleRepository;
+    // @Autowired
+    // private RoleService roleService;
+    @Autowired
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,58 +47,56 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UsersEntity add(UserRequest userRequest) {
-// Kiểm tra xem username đã tồn tại trong cơ sở dữ liệu chưa
-//        if (userRepository.existsByUsername(userRequest.getUsername())) {
-//            throw new RuntimeException("Username \"" + userRequest.getUsername() + "\" đã được sử dụng!");
-//        }
+        // Kiểm tra xem mật khẩu và mật khẩu xác nhận có khớp nhau không
+        if (!userRequest.getPassword().equals(userRequest.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
 
+        // Kiểm tra xem các vai trò được cung cấp có tồn tại không
+        List<RolesEntity> roles = new ArrayList<>();
+        for (String roleName : userRequest.getRoles()) {
+            RolesEntity role = roleRepository.findByRoleName(roleName);
+            if (role != null) {
+                roles.add(role);
+            } else {
+                throw new IllegalArgumentException("Role " + roleName + " does not exist");
+            }
+        }
 
-
-        // Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
+        // Mã hóa mật khẩu
         String encodedPassword = passwordEncoder.encode(userRequest.getPassword());
 
-        // Tạo đối tượng UsersEntity từ thông tin trong userRequest
+        // Tạo UserEntity
         UsersEntity user = new UsersEntity();
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         user.setFullName(userRequest.getFullName());
-        user.setStatus(true);
-        user.setPassword(encodedPassword); // Lưu mật khẩu đã mã hóa
+        user.setStatus(true); // Giả sử người dùng mới là hoạt động theo mặc định
+        user.setPassword(encodedPassword);
         user.setPhone(userRequest.getPhone());
         user.setAddress(userRequest.getAddress());
-        user.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Đặt thời gian tạo mới
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
+        // Lưu UserEntity
+        UsersEntity savedUser = userRepository.save(user);
 
-
-        // Tạo danh sách vai trò từ thông tin được cung cấp trong request
-        List<RolesEntity> rolesEntities = new ArrayList<>();
-
-        // Lấy danh sách vai trò từ cơ sở dữ liệu
-        List<RolesEntity> allRoles = roleRepository.findAll();
-
-        // Kiểm tra và lọc ra các vai trò từ danh sách tất cả vai trò
-//        for (RolesEntity role : allRoles) {
-//            if (userRequest.getRoles().contains(role.getRoleName())) {
-//                user.setUserRoleEntities(createUserRoleEntities(user, rolesEntities));
-//            }
-//        }
-
-        // Gán danh sách vai trò cho người dùng
-
-
-        // Lưu người dùng vào cơ sở dữ liệu
-        return userRepository.save(user);
-    }
-
-    // Tạo danh sách UserRoleEntity từ danh sách người dùng và vai trò tương ứng
-    private List<UserRoleEntity> createUserRoleEntities(UsersEntity user, List<RolesEntity> roles) {
+        // Tạo và lưu các UserRoleEntity
         List<UserRoleEntity> userRoleEntities = new ArrayList<>();
         for (RolesEntity role : roles) {
-            UserRoleEntity userRoleEntity = new UserRoleEntity();
-            userRoleEntity.setUsersByUserId(user);
-            userRoleEntity.setRolesByRoleId(role);
-            userRoleEntities.add(userRoleEntity);
+            UserRoleEntity newUserRole = new UserRoleEntity();
+            newUserRole.setUserId(savedUser.getUserId());
+            newUserRole.setRoleId(role.getRoleId());
+            newUserRole.setRolesByRoleId(role);
+            newUserRole.setUsersByUserId(savedUser);
+
+            userRoleEntities.add(newUserRole);
+
+            userRoleRepository.save(newUserRole);
         }
-        return userRoleEntities;
+        // Cập nhật danh sách userRoleEntities trong UsersEntity
+        savedUser.setUserRoleEntities(userRoleEntities);
+
+        return savedUser;
+
     }
 }

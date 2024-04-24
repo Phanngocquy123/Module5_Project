@@ -7,11 +7,16 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class UserRoleEntityPK implements Serializable {
+    @Column(name = "user_id")
+    @Id
     private long userId;
+
+    @Column(name = "role_id")
+    @Id
     private long roleId;
 
-    @Column(name = "user_Id")
-    @Id
+
+
     public long getUserId() {
         return userId;
     }
@@ -20,8 +25,7 @@ public class UserRoleEntityPK implements Serializable {
         this.userId = userId;
     }
 
-    @Column(name = "role_Id")
-    @Id
+
     public long getRoleId() {
         return roleId;
     }

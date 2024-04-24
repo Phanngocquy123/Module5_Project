@@ -18,21 +18,22 @@ SELECT * FROM users;
 
 CREATE TABLE roles (
     role_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    role_name ENUM('ADMIN', 'USER') NOT NULL
+    role_name ENUM('ROLE_ADMIN', 'ROLE_USER') NOT NULL
 );
 INSERT INTO roles (role_name) VALUES 
-('ADMIN'),
-('USER')
+('ROLE_ADMIN'),
+('ROLE_USER')
 ;
 SELECT * FROM roles;
 
 CREATE TABLE user_role(	
-	user_Id BIGINT NOT NULL,    
-	role_Id BIGINT NOT NULL,    
-	PRIMARY KEY (user_Id, role_Id),    
-	FOREIGN KEY (user_Id) REFERENCES users(user_id),    
-	FOREIGN KEY (role_Id) REFERENCES roles(role_id)
+	user_id BIGINT NOT NULL,    
+	role_id BIGINT NOT NULL,    
+	PRIMARY KEY (user_id, role_id),    
+	FOREIGN KEY (user_id) REFERENCES users(user_id),    
+	FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
+SELECT * FROM user_role;
 
 CREATE TABLE categories (
     category_id BIGINT PRIMARY KEY AUTO_INCREMENT,

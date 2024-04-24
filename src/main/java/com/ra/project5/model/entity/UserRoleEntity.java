@@ -8,13 +8,23 @@ import java.util.Objects;
 @Table(name = "user_role", schema = "project_module5", catalog = "")
 @IdClass(UserRoleEntityPK.class)
 public class UserRoleEntity {
+    @Id
+    @Column(name = "user_id") // Tên cột user_id
     private long userId;
-    private long roleId;
-    private RolesEntity rolesByRoleId;
-    private UsersEntity usersByUserId;
 
     @Id
-    @Column(name = "user_Id")
+    @Column(name = "role_id") // Tên cột role_id
+    private long roleId;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false, insertable = false, updatable = false)
+    private RolesEntity rolesByRoleId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
+    private UsersEntity usersByUserId;
+
+
     public long getUserId() {
         return userId;
     }
@@ -23,8 +33,7 @@ public class UserRoleEntity {
         this.userId = userId;
     }
 
-    @Id
-    @Column(name = "role_Id")
+
     public long getRoleId() {
         return roleId;
     }
@@ -46,8 +55,7 @@ public class UserRoleEntity {
         return Objects.hash(userId, roleId);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "role_Id", referencedColumnName = "role_id", nullable = false)
+
     public RolesEntity getRolesByRoleId() {
         return rolesByRoleId;
     }
@@ -56,8 +64,7 @@ public class UserRoleEntity {
         this.rolesByRoleId = rolesByRoleId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "user_Id", referencedColumnName = "user_id", nullable = false)
+
     public UsersEntity getUsersByUserId() {
         return usersByUserId;
     }

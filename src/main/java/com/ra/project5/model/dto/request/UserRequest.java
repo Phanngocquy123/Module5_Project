@@ -2,6 +2,7 @@ package com.ra.project5.model.dto.request;
 
 
 import com.ra.project5.model.entity.RolesEntity;
+import com.ra.project5.model.entity.UserRoleEntity;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +16,5 @@ public class UserRequest {
     private String email;
     private String phone;
     private String address;
-    private String roles;
+    private List<String> roles;
 }
