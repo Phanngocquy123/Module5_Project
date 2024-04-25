@@ -1,5 +1,6 @@
 package com.ra.project5.service.impl;
 
+import com.ra.project5.exception.BaseException;
 import com.ra.project5.model.dto.request.UserRequest;
 import com.ra.project5.model.entity.RolesEntity;
 import com.ra.project5.model.entity.UserRoleEntity;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -46,10 +48,11 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UsersEntity add(UserRequest userRequest) {
         // Kiểm tra xem mật khẩu và mật khẩu xác nhận có khớp nhau không
         if (!userRequest.getPassword().equals(userRequest.getConfirmPassword())) {
-            throw new IllegalArgumentException("Passwords do not match");
+            throw new BaseException("RA-00-400");
         }
 
         // Kiểm tra xem các vai trò được cung cấp có tồn tại không
@@ -59,7 +62,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             if (role != null) {
                 roles.add(role);
             } else {
-                throw new IllegalArgumentException("Role " + roleName + " does not exist");
+                throw new BaseException("RA-01-400");
             }
         }
 

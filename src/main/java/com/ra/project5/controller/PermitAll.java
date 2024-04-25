@@ -1,6 +1,7 @@
 package com.ra.project5.controller;
 
 import com.ra.project5.model.dto.request.UserRequest;
+import com.ra.project5.model.dto.response.RegistrationResponse;
 import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.model.token.TokenRequest;
 import com.ra.project5.model.token.TokenResponse;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api.myservice.com/v1")
 public class PermitAll {
     @Autowired
     private JwtUtil jwtUtil;
@@ -29,12 +30,15 @@ public class PermitAll {
     @Autowired
     private UserDetailServiceImpl userDetailService;
 
-    @PostMapping("/sign-up")
-    public UsersEntity register(@RequestBody UserRequest userRequest) {
-
-        // Trả về thông tin của người dùng đã đăng ký thành công
-        return userDetailService.add(userRequest);
+    // Đăng ký tài khoản người dùng
+    @PostMapping("/auth/sign-up")
+    public ResponseEntity<RegistrationResponse> register(@RequestBody UserRequest userRequest) {
+        UsersEntity user = userDetailService.add(userRequest);
+        RegistrationResponse response = new RegistrationResponse("register successful !");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
 
     @PostMapping("/auth/sign-in")
     public ResponseEntity getToken(@RequestBody TokenRequest request) {
@@ -50,5 +54,8 @@ public class PermitAll {
 
         return new ResponseEntity(tokenResponse, HttpStatus.OK);
     }
+
+
+
 }
 

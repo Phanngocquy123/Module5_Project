@@ -54,7 +54,7 @@ public class SpringSecurityConfig {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .requestMatchers("/api/public/**", "/auth/**").permitAll()
+                .requestMatchers("/api.myservice.com/v1/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -72,9 +72,10 @@ public class SpringSecurityConfig {
         corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.setAllowCredentials(true); // Cho phép gửi cookie
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration("/api.myservice.com/v1/**", corsConfiguration);
         return source;
     }
 
