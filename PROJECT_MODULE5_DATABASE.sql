@@ -56,6 +56,11 @@ CREATE TABLE products (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 
+INSERT INTO products (sku, product_name, description, unit_price, stock_quantity, image, category_id)
+VALUES 
+    ('SKU001', 'Product 1', 'Description of Product 1', 10.99, 50, 'image1.jpg', 1);
+   
+
 CREATE TABLE orders (
     order_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     serial_number VARCHAR(100) UNIQUE,

@@ -12,4 +12,5 @@ public class TokenResponse {
     private String tokenType = "Bearer Token";
     private List<String> roles;
 
+
 }
