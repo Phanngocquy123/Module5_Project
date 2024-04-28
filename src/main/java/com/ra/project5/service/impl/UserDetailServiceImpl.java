@@ -30,8 +30,6 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     private UserRepository userRepository;
     @Autowired
     private UserRoleRepository userRoleRepository;
-    // @Autowired
-    // private RoleService roleService;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired

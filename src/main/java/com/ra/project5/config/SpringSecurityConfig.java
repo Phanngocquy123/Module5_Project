@@ -66,8 +66,7 @@ public class SpringSecurityConfig {
         return http.build();
     }
 
-//  .requestMatchers("/api.myservice.com/v1/**").permitAll()
-//                .anyRequest().authenticated()
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
