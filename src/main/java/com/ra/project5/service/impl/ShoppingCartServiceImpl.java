@@ -31,7 +31,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private UserRepository userRepository;
 
     @Override
-    public void addToCart(ShoppingCartRequest shoppingCartRequest) {
+    public ShoppingCartResponse addToCart(ShoppingCartRequest shoppingCartRequest) {
+
         // Lấy thông tin người dùng từ token
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -58,6 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             // Nếu đã tồn tại, cập nhật số lượng
             existingItem.setOrderQuantity(existingItem.getOrderQuantity() + shoppingCartRequest.getOrderQuantity());
             shoppingCartRepository.save(existingItem);
+            return convertToResponse(existingItem, product);
        } else {
             // Nếu chưa tồn tại, tạo một mục mới
             ShoppingCartEntity shoppingCart = new ShoppingCartEntity();
@@ -65,6 +67,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             shoppingCart.setProductsByProductId(product);
             shoppingCart.setOrderQuantity(shoppingCartRequest.getOrderQuantity());
             shoppingCartRepository.save(shoppingCart);
+            return convertToResponse(shoppingCart, product);
         }
+
+
+    }
+
+    private ShoppingCartResponse convertToResponse(ShoppingCartEntity shoppingCartEntity, ProductsEntity productsEntity){
+        ShoppingCartResponse response = new ShoppingCartResponse();
+        response.setShoppingCartId(shoppingCartEntity.getShoppingCartId());
+        response.setProductName(productsEntity.getProductName());
+        response.setUnitPrice(productsEntity.getUnitPrice());
+        response.setOrderQuantity(shoppingCartEntity.getOrderQuantity());
+        return  response;
     }
 }

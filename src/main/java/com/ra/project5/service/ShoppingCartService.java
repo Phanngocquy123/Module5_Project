@@ -6,5 +6,5 @@ import com.ra.project5.model.entity.UsersEntity;
 
 
 public interface ShoppingCartService {
-    void addToCart(ShoppingCartRequest shoppingCartRequest);
+    ShoppingCartResponse addToCart(ShoppingCartRequest shoppingCartRequest);
 }

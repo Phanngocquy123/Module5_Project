@@ -26,17 +26,19 @@ public class RoleUser {
     private ShoppingCartService shoppingCartService;
 
     @PostMapping("/shopping-cart")
-    public ResponseEntity<?> addToShoppingCart(@RequestBody ShoppingCartRequest shoppingCartRequest) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity addToShoppingCart(@RequestBody ShoppingCartRequest shoppingCartRequest) {
         try {
             // Lấy thông tin người dùng từ token
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
+         //   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+          //  String username = authentication.getName();
 
             // Gọi phương thức addToCart từ service để thêm sản phẩm vào giỏ hàng của người dùng
-            shoppingCartService.addToCart(shoppingCartRequest);
+           ShoppingCartResponse response = shoppingCartService.addToCart(shoppingCartRequest);
 
             // Trả về thông báo thành công nếu không có lỗi xảy ra
-            return ResponseEntity.ok("Product added to shopping cart successfully.");
+          //  return ResponseEntity.ok("Product added to shopping cart successfully.");
+            return new  ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
             // Trả về thông báo lỗi nếu có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add product to shopping cart.");

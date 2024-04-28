@@ -61,7 +61,7 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT NULL,
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
-
+SELECT * FROM products;
 INSERT INTO products (sku, product_name, description, unit_price, stock_quantity, image, category_id) VALUES
     (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Máy tính', 'các loại máy tính', 10.99, 100, 'image1.jpg', 1),
     (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Điện thoại', 'các loại điện thoại', 15.99, 150, 'image2.jpg', 1),
@@ -110,6 +110,7 @@ CREATE TABLE shopping_cart (
     FOREIGN KEY (product_id) REFERENCES products(product_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+SELECT * FROM shopping_cart;
 
 CREATE TABLE addresses (
     address_id BIGINT PRIMARY KEY AUTO_INCREMENT,
