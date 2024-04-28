@@ -2,11 +2,13 @@ package com.ra.project5.controller;
 
 import com.ra.project5.exception.BaseException;
 import com.ra.project5.model.dto.request.UserRequest;
+import com.ra.project5.model.dto.response.ProductResponse;
 import com.ra.project5.model.dto.response.RegistrationResponse;
 import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.model.token.TokenRequest;
 import com.ra.project5.model.token.TokenResponse;
 import com.ra.project5.model.token.UserDetailsAdapter;
+import com.ra.project5.service.impl.ProductServiceImpl;
 import com.ra.project5.service.impl.UserDetailServiceImpl;
 import com.ra.project5.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +35,8 @@ public class PermitAll {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserDetailServiceImpl userDetailService;
+    @Autowired
+    private ProductServiceImpl productService;
 
     // Đăng ký tài khoản người dùng
     @PostMapping("/auth/sign-up")
@@ -74,10 +75,21 @@ public class PermitAll {
         } catch (AuthenticationException a){
             throw  new BaseException("RA-00-401");
         }
-
     }
 
+    @GetMapping("/products/search")
+    public ResponseEntity<List<ProductResponse>> findProductByName(@RequestParam("searchName") String searchName) {
+        List<ProductResponse> productList = productService.findProduct(searchName);
+        return new ResponseEntity<>(productList, HttpStatus.OK);
+    }
 
-
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponse>> findProductsAndSort(
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "size") int size,
+            @RequestParam(value = "sort") String sortBy) {
+        List<ProductResponse> productList = productService.findProductAndSort(page, size, sortBy);
+        return new ResponseEntity<>(productList, HttpStatus.OK);
+    }
 }
 

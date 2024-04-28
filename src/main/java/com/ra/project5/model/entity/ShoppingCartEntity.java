@@ -2,13 +2,12 @@ package com.ra.project5.model.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "shopping_cart", schema = "project_module5", catalog = "")
 public class ShoppingCartEntity {
     private int shoppingCartId;
     private Integer orderQuantity;
+    private ProductsEntity productsByProductId;
     private UsersEntity usersByUserId;
 
     @Id
@@ -35,13 +34,31 @@ public class ShoppingCartEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         ShoppingCartEntity that = (ShoppingCartEntity) o;
-        return shoppingCartId == that.shoppingCartId && Objects.equals(orderQuantity, that.orderQuantity);
+
+        if (shoppingCartId != that.shoppingCartId) return false;
+        if (orderQuantity != null ? !orderQuantity.equals(that.orderQuantity) : that.orderQuantity != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shoppingCartId, orderQuantity);
+        int result = shoppingCartId;
+        result = 31 * result + (orderQuantity != null ? orderQuantity.hashCode() : 0);
+        return result;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    public ProductsEntity getProductsByProductId() {
+        return productsByProductId;
+    }
+
+    public void setProductsByProductId(ProductsEntity productsByProductId) {
+        this.productsByProductId = productsByProductId;
     }
 
     @ManyToOne

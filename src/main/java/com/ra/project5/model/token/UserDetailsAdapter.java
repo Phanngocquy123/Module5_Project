@@ -21,13 +21,6 @@ public class UserDetailsAdapter implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // Kiểm tra xem usersEntity có null không
-//        if (usersEntity != null) {
-//            authorities = usersEntity.getUserRoleEntities().stream()
-//                    .map(ur -> new SimpleGrantedAuthority(ur.getRolesByRoleId().getRoleName()))
-//                    .collect(Collectors.toList());
-//        }
-//        return authorities;
         List<GrantedAuthority> roles = new ArrayList<>();
         usersEntity.getUserRoleEntities().forEach(ur -> {
             roles.add(new SimpleGrantedAuthority(ur.getRolesByRoleId().getRoleName()));

@@ -66,16 +66,20 @@ public class SpringSecurityConfig {
         return http.build();
     }
 
+//  .requestMatchers("/api.myservice.com/v1/**").permitAll()
+//                .anyRequest().authenticated()
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
+       // corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.setAllowCredentials(true); // Cho phép gửi cookie
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api.myservice.com/v1/**", corsConfiguration);
+       // source.registerCorsConfiguration("/api.myservice.com/v1/**", corsConfiguration);
+        source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
 
