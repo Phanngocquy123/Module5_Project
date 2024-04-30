@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class OrderDetailsEntityPK implements Serializable {
     private long orderId;
@@ -34,12 +33,19 @@ public class OrderDetailsEntityPK implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         OrderDetailsEntityPK that = (OrderDetailsEntityPK) o;
-        return orderId == that.orderId && productId == that.productId;
+
+        if (orderId != that.orderId) return false;
+        if (productId != that.productId) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, productId);
+        int result = (int) (orderId ^ (orderId >>> 32));
+        result = 31 * result + (int) (productId ^ (productId >>> 32));
+        return result;
     }
 }

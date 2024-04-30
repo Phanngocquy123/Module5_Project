@@ -1,50 +1,85 @@
 package com.ra.project5.controller;
 
+
+import com.ra.project5.model.dto.request.CheckoutRequest;
 import com.ra.project5.model.dto.request.ShoppingCartRequest;
+import com.ra.project5.model.dto.response.CheckoutResponse;
+import com.ra.project5.model.dto.response.NoticeResponse;
 import com.ra.project5.model.dto.response.ShoppingCartResponse;
-import com.ra.project5.model.entity.ShoppingCartEntity;
-import com.ra.project5.model.entity.UsersEntity;
-import com.ra.project5.repository.UserRoleRepository;
+
+import com.ra.project5.service.CheckoutService;
 import com.ra.project5.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api.myservice.com/v1/user")
 public class RoleUser {
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private CheckoutService checkoutService;
 
-    @PostMapping("/shopping-cart")
+    // 16 - Danh sách sản phẩm trong giỏ hàng
+    @GetMapping("/shopping-cart/show")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity addToShoppingCart(@RequestBody ShoppingCartRequest shoppingCartRequest) {
-        try {
-            // Lấy thông tin người dùng từ token
-         //   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-          //  String username = authentication.getName();
-
-            // Gọi phương thức addToCart từ service để thêm sản phẩm vào giỏ hàng của người dùng
-           ShoppingCartResponse response = shoppingCartService.addToCart(shoppingCartRequest);
-
-            // Trả về thông báo thành công nếu không có lỗi xảy ra
-          //  return ResponseEntity.ok("Product added to shopping cart successfully.");
-            return new  ResponseEntity(response, HttpStatus.OK);
-        } catch (Exception e) {
-            // Trả về thông báo lỗi nếu có lỗi xảy ra trong quá trình thêm sản phẩm vào giỏ hàng
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add product to shopping cart.");
-        }
+    public ResponseEntity<List<ShoppingCartResponse>> showAll(){
+        return new ResponseEntity<>(shoppingCartService.showAll(), HttpStatus.OK);
     }
 
+    // 17 - Thêm mới sản phẩm vào giỏ hàng
+    @PostMapping("/shopping-cart/add")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity addToShoppingCart(@RequestBody ShoppingCartRequest shoppingCartRequest) {
+        ShoppingCartResponse response = shoppingCartService.addToCart(shoppingCartRequest);
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+
+    // 18 - Thay đổi số lượng đặt hàng của 1 sản phẩm
+    @PutMapping("/shopping-cart/{cartItemId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity updateCartItemQuantity(@PathVariable Integer cartItemId, @RequestBody Map<String, Integer> requestBody) {
+        int quantity = requestBody.get("quantity");
+        ShoppingCartResponse response = shoppingCartService.updateCartItemQuantity(cartItemId, quantity);
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
+    // 19 - Xóa 1 sp trong giỏ hàng
+    @DeleteMapping("/shopping-cart/delete/{cartItemId}")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<NoticeResponse> deleteCartItem(@PathVariable Integer cartItemId) {
+        shoppingCartService.deleteCartItem(cartItemId);
+        NoticeResponse response = new NoticeResponse("Delete successfully !");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 20 -  Xóa toàn bộ sản phẩm
+    @DeleteMapping("/shopping-cart/delete-all")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<NoticeResponse> clearCart() {
+        shoppingCartService.deleteAllCartItem();
+        NoticeResponse response = new NoticeResponse("Delete successfully !");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 21 - Đặt hàng
+    @PostMapping("/shopping-cart/checkout")
+    @PreAuthorize("hasRole('USER')")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<CheckoutResponse> checkout(@RequestBody CheckoutRequest request) {
+        long addressId = request.getAddressId();
+        CheckoutResponse response = checkoutService.checkout(addressId);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 
 }

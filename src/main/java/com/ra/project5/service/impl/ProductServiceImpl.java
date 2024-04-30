@@ -1,5 +1,6 @@
 package com.ra.project5.service.impl;
 
+import com.ra.project5.exception.BaseException;
 import com.ra.project5.model.dto.response.ProductResponse;
 import com.ra.project5.model.entity.ProductsEntity;
 import com.ra.project5.repository.ProductRepository;
@@ -46,4 +47,14 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
         return productList;
     }
+
+    // 46 xóa sản phẩm
+    @Override
+    public void deleteProduct(Long productId){
+        ProductsEntity productsEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new BaseException("RA-C46-404"));
+
+        productRepository.delete(productsEntity);
+    }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -26,5 +27,11 @@ public class CommonHandlerException {
         }
         baseException = new BaseException("RA-00-500");
         return new ResponseEntity<>(baseException.getErrorMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        LOGGER.error("AccessDeniedException occurred: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>("Not Authenticated !", HttpStatus.FORBIDDEN);  // xử lý khi sai vai trò
     }
 }

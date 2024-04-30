@@ -8,10 +8,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegistrationResponse {
+public class NoticeResponse {
     private String message;
 
-    public RegistrationResponse(String message) {
+    public NoticeResponse(String message) {
         this.message = message;
     }
 }

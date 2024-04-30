@@ -1,9 +1,11 @@
 package com.ra.project5.model.entity;
 
+
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "products", schema = "project_module5", catalog = "")
@@ -17,6 +19,10 @@ public class ProductsEntity {
     private String image;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private Collection<OrderDetailsEntity> orderDetailsByProductId;
+    private CategoriesEntity categoriesByCategoryId;
+    private Collection<ShoppingCartEntity> shoppingCartsByProductId;
+    private Collection<WishListsEntity> wishListsByProductId;
 
     @Id
     @Column(name = "product_id")
@@ -141,5 +147,42 @@ public class ProductsEntity {
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         return result;
+    }
+
+    @OneToMany(mappedBy = "productsByProductId")
+    public Collection<OrderDetailsEntity> getOrderDetailsByProductId() {
+        return orderDetailsByProductId;
+    }
+
+    public void setOrderDetailsByProductId(Collection<OrderDetailsEntity> orderDetailsByProductId) {
+        this.orderDetailsByProductId = orderDetailsByProductId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    public CategoriesEntity getCategoriesByCategoryId() {
+        return categoriesByCategoryId;
+    }
+
+    public void setCategoriesByCategoryId(CategoriesEntity categoriesByCategoryId) {
+        this.categoriesByCategoryId = categoriesByCategoryId;
+    }
+
+    @OneToMany(mappedBy = "productsByProductId")
+    public Collection<ShoppingCartEntity> getShoppingCartsByProductId() {
+        return shoppingCartsByProductId;
+    }
+
+    public void setShoppingCartsByProductId(Collection<ShoppingCartEntity> shoppingCartsByProductId) {
+        this.shoppingCartsByProductId = shoppingCartsByProductId;
+    }
+
+    @OneToMany(mappedBy = "productsByProductId")
+    public Collection<WishListsEntity> getWishListsByProductId() {
+        return wishListsByProductId;
+    }
+
+    public void setWishListsByProductId(Collection<WishListsEntity> wishListsByProductId) {
+        this.wishListsByProductId = wishListsByProductId;
     }
 }

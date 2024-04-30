@@ -42,10 +42,11 @@ CREATE TABLE categories (
     status BIT NOT NULL DEFAULT 1  -- true:Active, false:Inactive
 );
 INSERT INTO categories (category_name, description, status) VALUES
-    ('Điện tử', 'Các loại hàng điện tử', 1),
-    ('Sách', 'Các loại sách', 1),
-    ('Áo quần', 'Các loại áo quần', 1)
+    ('Điện tử 1', 'Các loại hàng điện tử', 1),
+    ('Sách 2', 'Các loại sách', 1),
+    ('Áo quần 3', 'Các loại áo quần', 1)
 ;
+
 
 
 CREATE TABLE products (
@@ -62,12 +63,13 @@ CREATE TABLE products (
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
 SELECT * FROM products;
+
 INSERT INTO products (sku, product_name, description, unit_price, stock_quantity, image, category_id) VALUES
-    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Máy tính', 'các loại máy tính', 10.99, 100, 'image1.jpg', 1),
-    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Điện thoại', 'các loại điện thoại', 15.99, 150, 'image2.jpg', 1),
-    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Nhân văn', 'các loại sách nhân văn', 20.99, 200, 'image3.jpg', 2),
-    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Khoa học', 'các loại sách khoa học', 20.99, 200, 'image4.jpg', 2),
-    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Thể thao', 'các loại áo quần thể thao', 20.99, 200, 'image5.jpg', 3)
+    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Máy tính 1', 'các loại máy tính', 10.99, 100, 'image1.jpg', 1),
+    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Điện thoại 2', 'các loại điện thoại', 15.99, 150, 'image2.jpg', 1),
+    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Nhân văn 3', 'các loại sách nhân văn', 20.99, 300, 'image3.jpg', 2),
+    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Khoa học 4', 'các loại sách khoa học', 20.99, 100, 'image4.jpg', 2),
+    (SUBSTRING(REPLACE(UUID(), '-', ''), 1, 100), 'Thể thao 5', 'các loại áo quần thể thao', 20.99, 200, 'image5.jpg', 3)
 ;
    
 
@@ -82,8 +84,10 @@ CREATE TABLE orders (
     receive_address VARCHAR(255),
     receive_phone VARCHAR(15),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    received_at DATE
+    received_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+SELECT * FROM orders;
 -- WAITING : Đơn hàng mới chờ xác nhận
 -- CONFIRM : Đã xác nhận
 -- DELIVERY : Đang giao hàng
@@ -101,6 +105,7 @@ CREATE TABLE order_details (
     FOREIGN KEY (order_id) REFERENCES orders(order_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+SELECT * FROM order_details;
 
 CREATE TABLE shopping_cart (
     shopping_cart_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -120,6 +125,10 @@ CREATE TABLE addresses (
     receive_name VARCHAR(50),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+INSERT INTO addresses (user_id, full_address, phone, receive_name) VALUES
+    (2, 'Q1 Hồ Chí Minh', '0998785888', 'lan1234')
+;
+   
 
 CREATE TABLE wish_lists (
     wish_list_id BIGINT PRIMARY KEY AUTO_INCREMENT,

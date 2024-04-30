@@ -9,11 +9,11 @@ import java.util.Objects;
 @IdClass(UserRoleEntityPK.class)
 public class UserRoleEntity {
     @Id
-    @Column(name = "user_id") // Tên cột user_id
+    @Column(name = "user_id")
     private long userId;
 
     @Id
-    @Column(name = "role_id") // Tên cột role_id
+    @Column(name = "role_id")
     private long roleId;
 
     @ManyToOne

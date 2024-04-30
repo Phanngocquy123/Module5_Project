@@ -3,7 +3,6 @@ package com.ra.project5.model.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 @Table(name = "order_details", schema = "project_module5", catalog = "")
@@ -71,13 +70,27 @@ public class OrderDetailsEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         OrderDetailsEntity that = (OrderDetailsEntity) o;
-        return orderId == that.orderId && productId == that.productId && Objects.equals(name, that.name) && Objects.equals(unitPrice, that.unitPrice) && Objects.equals(orderQuantity, that.orderQuantity);
+
+        if (orderId != that.orderId) return false;
+        if (productId != that.productId) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (unitPrice != null ? !unitPrice.equals(that.unitPrice) : that.unitPrice != null) return false;
+        if (orderQuantity != null ? !orderQuantity.equals(that.orderQuantity) : that.orderQuantity != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, productId, name, unitPrice, orderQuantity);
+        int result = (int) (orderId ^ (orderId >>> 32));
+        result = 31 * result + (int) (productId ^ (productId >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (unitPrice != null ? unitPrice.hashCode() : 0);
+        result = 31 * result + (orderQuantity != null ? orderQuantity.hashCode() : 0);
+        return result;
     }
 
     @ManyToOne

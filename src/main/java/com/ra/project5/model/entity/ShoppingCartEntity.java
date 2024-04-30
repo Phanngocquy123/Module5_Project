@@ -1,6 +1,7 @@
 package com.ra.project5.model.entity;
 
 import jakarta.persistence.*;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 
 @Entity
 @Table(name = "shopping_cart", schema = "project_module5", catalog = "")
@@ -11,6 +12,7 @@ public class ShoppingCartEntity {
     private UsersEntity usersByUserId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shopping_cart_id")
     public int getShoppingCartId() {
         return shoppingCartId;

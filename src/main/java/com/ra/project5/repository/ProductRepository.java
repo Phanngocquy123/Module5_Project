@@ -13,4 +13,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
     @Query("SELECT p FROM ProductsEntity p WHERE LOWER(p.productName) LIKE %:keyword% OR LOWER(p.description) LIKE %:keyword%")
     List<ProductsEntity> findByKeyword(String keyword);
+
+    ProductsEntity findByProductName(String productName);
 }

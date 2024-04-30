@@ -1,18 +1,18 @@
 package com.ra.project5.model.entity;
 
+
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Objects;
+import java.util.Collection;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders", schema = "project_module5", catalog = "")
 public class OrdersEntity {
     private long orderId;
     private String serialNumber;
-    private long userId;
     private BigDecimal totalPrice;
     private Object status;
     private String note;
@@ -20,9 +20,12 @@ public class OrdersEntity {
     private String receiveAddress;
     private String receivePhone;
     private Timestamp createdAt;
-    private Date receivedAt;
+    private Timestamp receivedAt;
+    private Collection<OrderDetailsEntity> orderDetailsByOrderId;
+    private UsersEntity usersByUserId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     public long getOrderId() {
         return orderId;
@@ -30,6 +33,12 @@ public class OrdersEntity {
 
     public void setOrderId(long orderId) {
         this.orderId = orderId;
+    }
+
+    @PrePersist
+    public void generateSerialNumber() {
+        UUID uuid = UUID.randomUUID();
+        this.serialNumber = uuid.toString();
     }
 
     @Basic
@@ -40,16 +49,6 @@ public class OrdersEntity {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    @Basic
-    @Column(name = "user_id")
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     @Basic
@@ -124,11 +123,11 @@ public class OrdersEntity {
 
     @Basic
     @Column(name = "received_at")
-    public Date getReceivedAt() {
+    public Timestamp getReceivedAt() {
         return receivedAt;
     }
 
-    public void setReceivedAt(Date receivedAt) {
+    public void setReceivedAt(Timestamp receivedAt) {
         this.receivedAt = receivedAt;
     }
 
@@ -136,12 +135,55 @@ public class OrdersEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         OrdersEntity that = (OrdersEntity) o;
-        return orderId == that.orderId && userId == that.userId && Objects.equals(serialNumber, that.serialNumber) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(status, that.status) && Objects.equals(note, that.note) && Objects.equals(receiveName, that.receiveName) && Objects.equals(receiveAddress, that.receiveAddress) && Objects.equals(receivePhone, that.receivePhone) && Objects.equals(createdAt, that.createdAt) && Objects.equals(receivedAt, that.receivedAt);
+
+        if (orderId != that.orderId) return false;
+        if (serialNumber != null ? !serialNumber.equals(that.serialNumber) : that.serialNumber != null) return false;
+        if (totalPrice != null ? !totalPrice.equals(that.totalPrice) : that.totalPrice != null) return false;
+        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (note != null ? !note.equals(that.note) : that.note != null) return false;
+        if (receiveName != null ? !receiveName.equals(that.receiveName) : that.receiveName != null) return false;
+        if (receiveAddress != null ? !receiveAddress.equals(that.receiveAddress) : that.receiveAddress != null)
+            return false;
+        if (receivePhone != null ? !receivePhone.equals(that.receivePhone) : that.receivePhone != null) return false;
+        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
+        if (receivedAt != null ? !receivedAt.equals(that.receivedAt) : that.receivedAt != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, serialNumber, userId, totalPrice, status, note, receiveName, receiveAddress, receivePhone, createdAt, receivedAt);
+        int result = (int) (orderId ^ (orderId >>> 32));
+        result = 31 * result + (serialNumber != null ? serialNumber.hashCode() : 0);
+        result = 31 * result + (totalPrice != null ? totalPrice.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (note != null ? note.hashCode() : 0);
+        result = 31 * result + (receiveName != null ? receiveName.hashCode() : 0);
+        result = 31 * result + (receiveAddress != null ? receiveAddress.hashCode() : 0);
+        result = 31 * result + (receivePhone != null ? receivePhone.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (receivedAt != null ? receivedAt.hashCode() : 0);
+        return result;
+    }
+
+    @OneToMany(mappedBy = "ordersByOrderId")
+    public Collection<OrderDetailsEntity> getOrderDetailsByOrderId() {
+        return orderDetailsByOrderId;
+    }
+
+    public void setOrderDetailsByOrderId(Collection<OrderDetailsEntity> orderDetailsByOrderId) {
+        this.orderDetailsByOrderId = orderDetailsByOrderId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    public UsersEntity getUsersByUserId() {
+        return usersByUserId;
+    }
+
+    public void setUsersByUserId(UsersEntity usersByUserId) {
+        this.usersByUserId = usersByUserId;
     }
 }
