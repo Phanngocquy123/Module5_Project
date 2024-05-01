@@ -3,12 +3,15 @@ package com.ra.project5.controller;
 
 import com.ra.project5.model.dto.request.CheckoutRequest;
 import com.ra.project5.model.dto.request.ShoppingCartRequest;
+import com.ra.project5.model.dto.request.UserUpdateRequest;
 import com.ra.project5.model.dto.response.CheckoutResponse;
 import com.ra.project5.model.dto.response.NoticeResponse;
 import com.ra.project5.model.dto.response.ShoppingCartResponse;
 
+import com.ra.project5.model.dto.response.UserResponse;
 import com.ra.project5.service.CheckoutService;
 import com.ra.project5.service.ShoppingCartService;
+import com.ra.project5.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,8 @@ public class RoleUser {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private CheckoutService checkoutService;
+    @Autowired
+    private UserDetailServiceImpl userDetailService;
 
     // 16 - Danh sách sản phẩm trong giỏ hàng
     @GetMapping("/shopping-cart/show")
@@ -81,5 +87,21 @@ public class RoleUser {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // 21 - Hiển thị thông tin người dùng
+    @GetMapping("/account/show")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserResponse> checkout() {
+        UserResponse response = userDetailService.showUserAccout();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/account/update")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
+                                                   @RequestParam(value = "file", required = false) MultipartFile file) {
+        System.out.println("888888888888888888888888888888888888888888888888888888888888888888888888");
+        UserResponse response = userDetailService.updateUser(userUpdateRequest, file);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }

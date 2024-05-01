@@ -4,6 +4,11 @@ server:
 spring:
     application:
         name: Project_Module5
+    servlet:
+        multipart:
+            enabled: true
+            max-file-size: 50MB
+            max-request-size: 50MB
     #Datasource
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver

@@ -3,6 +3,7 @@ package com.ra.project5.service.impl;
 import com.ra.project5.exception.BaseException;
 import com.ra.project5.model.dto.request.ShoppingCartRequest;
 import com.ra.project5.model.dto.response.ShoppingCartResponse;
+import com.ra.project5.model.dto.response.UserResponse;
 import com.ra.project5.model.entity.ProductsEntity;
 import com.ra.project5.model.entity.ShoppingCartEntity;
 import com.ra.project5.model.entity.UsersEntity;
@@ -146,6 +147,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         shoppingCartRepository.deleteAll(userCartItems);
     }
+
+
+
+
 
     private ShoppingCartResponse convertToResponse(ShoppingCartEntity shoppingCartEntity, ProductsEntity productsEntity) {
         ShoppingCartResponse response = new ShoppingCartResponse();

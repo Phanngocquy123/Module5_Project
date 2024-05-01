@@ -61,26 +61,23 @@ public class CheckoutServiceImpl implements CheckoutService {
 
         OrdersEntity savedOrder = orderRepository.save(order);
 
-        // Tạo các chi tiết đơn hàng
-        List<OrderDetailsEntity> orderDetailsEntities = new ArrayList<>();
+        // Lấy danh sách sản phẩm trong giỏ hàng
         List<ShoppingCartEntity> cartItems = shoppingCartService.findAllListCart();
+
+        // Tạo danh sách chi tiết đơn hàng
+        List<OrderDetailsEntity> orderDetailsList = new ArrayList<>();
         for (ShoppingCartEntity cartItem : cartItems) {
             OrderDetailsEntity orderDetail = new OrderDetailsEntity();
-            orderDetail.setOrdersByOrderId(savedOrder); // Thiết lập trường này
-
-            orderDetail.setProductId(cartItem.getProductsByProductId().getProductId());
+            orderDetail.setOrdersByOrderId(savedOrder);
+            orderDetail.setProductsByProductId(cartItem.getProductsByProductId());
             orderDetail.setName(cartItem.getProductsByProductId().getProductName());
             orderDetail.setUnitPrice(cartItem.getProductsByProductId().getUnitPrice());
             orderDetail.setOrderQuantity(cartItem.getOrderQuantity());
-
-            orderDetailsEntities.add(orderDetail);
+      //      orderDetailsList.add(orderDetail);
         }
-        // Lưu các chi tiết đơn hàng
-        orderDetailRepository.saveAll(orderDetailsEntities);
 
-        // Thiết lập các chi tiết đơn hàng cho đơn hàng đã lưu
-        savedOrder.setOrderDetailsByOrderId(orderDetailsEntities);
-        orderRepository.save(savedOrder);
+        // Lưu danh sách chi tiết đơn hàng vào cơ sở dữ liệu
+     //   orderDetailRepository.saveAll(orderDetailsList);
 
         // Tạo CheckoutResponse
         CheckoutResponse response = new CheckoutResponse();
