@@ -95,7 +95,7 @@ public class RoleUser {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/account/update")
+    @PutMapping("/account")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
                                                    @RequestParam(value = "file", required = false) MultipartFile file) {

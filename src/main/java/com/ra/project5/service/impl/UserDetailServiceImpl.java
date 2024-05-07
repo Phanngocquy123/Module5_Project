@@ -6,6 +6,7 @@ import com.ra.project5.model.dto.request.UserUpdateRequest;
 import com.ra.project5.model.dto.response.UserResponse;
 import com.ra.project5.model.entity.RolesEntity;
 import com.ra.project5.model.entity.UserRoleEntity;
+import com.ra.project5.model.entity.UserRoleEntityPK;
 import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.model.token.UserDetailsAdapter;
 import com.ra.project5.repository.RoleRepository;
@@ -16,6 +17,10 @@ import com.ra.project5.service.ShoppingCartService;
 import com.ra.project5.service.UserService;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailServiceImpl implements UserService, UserDetailsService {
@@ -133,6 +139,44 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
 
         UsersEntity updatedUser = userRepository.save(user);
         return convertToResponse(updatedUser);
+    }
+
+
+    // 36 - Lấy ra danh sách người dùng +  phân trang + sắp xếp
+    @Override
+    public List<UserResponse> getUsers(int page, int size, String sortBy, String sortOrder) {
+        Sort.Direction direction = sortOrder.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<UsersEntity> usersPage = userRepository.findAll(pageable);
+        return usersPage.getContent().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // 37 - Thêm quyền cho người dùng
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addRoleToUser(long userId, long roleId) {
+        // Tìm người dùng dựa trên ID
+        UsersEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException("RA-C37-401"));
+
+        // Tìm vai trò dựa trên ID
+        RolesEntity role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new BaseException("RA-C37-401"));
+
+        // Kiểm tra xem vai trò tồn tại trong cơ sở dữ liệu hay không
+//        if (role == null) {
+//            throw new BaseException("RA-C37-401"); // Ném ra ngoại lệ nếu vai trò không tồn tại
+//        }
+
+        // Tạo một UserRoleEntity mới
+        UserRoleEntity newUserRole = new UserRoleEntity();
+        newUserRole.setUserId(userId);
+        newUserRole.setRoleId(roleId);
+
+        // Lưu thay đổi vào cơ sở dữ liệu
+        userRoleRepository.save(newUserRole);
     }
 
     public UserResponse convertToResponse(UsersEntity usersEntity){
