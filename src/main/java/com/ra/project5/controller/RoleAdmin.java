@@ -1,8 +1,12 @@
 package com.ra.project5.controller;
 
 import com.ra.project5.model.dto.response.NoticeResponse;
+import com.ra.project5.model.dto.response.ProductResponse;
+import com.ra.project5.model.dto.response.RoleResponse;
 import com.ra.project5.model.dto.response.UserResponse;
+import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.service.ProductService;
+import com.ra.project5.service.UserRoleService;
 import com.ra.project5.service.UserService;
 import com.ra.project5.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api.myservice.com/v1/admin")
@@ -20,6 +25,8 @@ public class RoleAdmin {
     private ProductService productService;
     @Autowired
     private UserDetailServiceImpl userDetailService;
+    @Autowired
+    private UserRoleService userRoleService;
 
     // 36 - Lấy ra danh sách người dùng +  phân trang + sắp xếp
     @GetMapping("/users")
@@ -42,11 +49,62 @@ public class RoleAdmin {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // 38 - Xóa quyền người dùng
+    @DeleteMapping("/users/{userId}/role/{roleId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NoticeResponse> removeRoleFromUser(@PathVariable long userId, @PathVariable long roleId) {
+        userDetailService.removeRoleFromUser(userId, roleId);
+        NoticeResponse response = new NoticeResponse("Remove permission success !");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
+    // 39 - Mở/ khóa người dùng
+    @PutMapping("/users/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NoticeResponse> toggleUserStatus(@PathVariable long userId) {
+        userDetailService.activeAndBlockUserStatus(userId);
+        NoticeResponse response = new NoticeResponse("Block/Unblock user success !");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
+    // 40 - Lấy về danh sách quyền
+    @GetMapping("/roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<RoleResponse>> getAllUserRoles() {
+        List<RoleResponse> roleResponses = userDetailService.getAllUserRoles();
+        if (roleResponses != null) {
+            return ResponseEntity.ok(roleResponses);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 
+    // 41 - Tìm kiếm người dùng theo tên
+    @GetMapping("/users/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponse>> searchUsersByName(@RequestParam String name) {
+        List<UserResponse> users = userDetailService.searchUsersByName(name);
+        return ResponseEntity.ok(users);
+    }
 
+    // 42 - Lấy về danh sách tất cả sản phẩm, sắp xếp, phân trang
+    @GetMapping("/products")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProductResponse>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "productId") String sortBy) {
+        List<ProductResponse> products = productService.findProductAndSort(page, size, sortBy);
+        return ResponseEntity.ok(products);
+    }
 
+    // 43 - Lấy thông tin sản phẩm theo id
+    @GetMapping("/products/{productId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long productId) {
+        ProductResponse product = productService.getProductById(productId);
+        return ResponseEntity.ok(product);
+    }
 
     // 46 - Xóa sản phẩm theo id
     @DeleteMapping("/products/delete/{productId}")

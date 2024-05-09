@@ -3,6 +3,7 @@ package com.ra.project5.service.impl;
 import com.ra.project5.exception.BaseException;
 import com.ra.project5.model.dto.request.UserRequest;
 import com.ra.project5.model.dto.request.UserUpdateRequest;
+import com.ra.project5.model.dto.response.RoleResponse;
 import com.ra.project5.model.dto.response.UserResponse;
 import com.ra.project5.model.entity.RolesEntity;
 import com.ra.project5.model.entity.UserRoleEntity;
@@ -31,7 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -165,10 +168,10 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
         RolesEntity role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new BaseException("RA-C37-401"));
 
-        // Kiểm tra xem vai trò tồn tại trong cơ sở dữ liệu hay không
-//        if (role == null) {
-//            throw new BaseException("RA-C37-401"); // Ném ra ngoại lệ nếu vai trò không tồn tại
-//        }
+        UserRoleEntity userRole = userRoleRepository.findByUserIdAndRoleId(userId, roleId);
+        if (userRole != null) {
+            throw new BaseException("RA-C37-2-401");
+        }
 
         // Tạo một UserRoleEntity mới
         UserRoleEntity newUserRole = new UserRoleEntity();
@@ -177,6 +180,75 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
 
         // Lưu thay đổi vào cơ sở dữ liệu
         userRoleRepository.save(newUserRole);
+    }
+
+    // 38 - Xóa quyền người dùng
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeRoleFromUser(long userId, long roleId) {
+        UsersEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException("RA-C37-401"));
+
+        RolesEntity role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new BaseException("RA-C37-401"));
+        UserRoleEntity userRole = userRoleRepository.findByUserIdAndRoleId(userId, roleId);
+        if (userRole != null) {
+            user.getUserRoleEntities().remove(userRole);
+            userRoleRepository.delete(userRole);
+        } else {
+           throw  new BaseException("RA-C37-401");
+        }
+      //  user.getUserRoleEntities().removeIf(u -> u.getRolesByRoleId().equals(role));
+
+        userRepository.save(user);
+    }
+
+    // 39- Mở/khóa người dùng
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void activeAndBlockUserStatus(long userId) {
+        UsersEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException("RA-39-401"));
+        user.setStatus(!user.isStatus());
+
+        userRepository.save(user);
+    }
+
+    // 41 - Tìm kiếm người dùng theo tên
+    @Override
+    public List<UserResponse> searchUsersByName(String name) {
+        List<UsersEntity> users = userRepository.findByFullNameContainingIgnoreCase(name);
+        return users.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // 40 - Lấy về danh sách quyền
+    @Override
+    public List<RoleResponse> getAllUserRoles() {
+        List<UserRoleEntity> userRoles = userRoleRepository.findAll();
+        Map<Long, List<String>> userRolesMap = new HashMap<>();
+
+        for (UserRoleEntity userRole : userRoles) {
+            long userId = userRole.getUserId();
+            String roleName = userRole.getRolesByRoleId().getRoleName();
+
+            // Nếu user đã tồn tại trong Map, thêm vai trò mới vào danh sách
+            // Nếu không, tạo một cặp mới với userId và vai trò
+            userRolesMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(roleName);
+        }
+
+
+
+
+        return userRolesMap.entrySet().stream()
+                .map(entry -> {
+                    RoleResponse roleResponse = new RoleResponse();
+                    roleResponse.setId(entry.getKey());
+                    roleResponse.setRoleName(entry.getValue());
+                    return roleResponse;
+                })
+                .collect(Collectors.toList());
     }
 
     public UserResponse convertToResponse(UsersEntity usersEntity){

@@ -28,16 +28,8 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
-    private ProductResponse convertToResponse(ProductsEntity productEntity) {
-        ProductResponse response = new ProductResponse();
-        response.setProductId(productEntity.getProductId());
-        response.setProductName(productEntity.getProductName());
-        response.setDescription(productEntity.getDescription());
-        response.setUnitPrice(productEntity.getUnitPrice());
-        response.setImage(productEntity.getImage());
-        return response;
-    }
-
+    // 10 - Danh sách sản phẩm có bán
+    // 42 - Lấy về danh sách tất cả sản phẩm, sắp xếp, phân trang
     @Override
     public List<ProductResponse> findProductAndSort(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
@@ -48,6 +40,16 @@ public class ProductServiceImpl implements ProductService {
         return productList;
     }
 
+    // 43 - Lấy thông tin sản phẩm theo id
+    @Override
+    public ProductResponse getProductById(Long productId) {
+        ProductsEntity productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new BaseException("RA-43-401"));
+
+        return convertToResponse(productEntity);
+    }
+
+
     // 46 xóa sản phẩm
     @Override
     public void deleteProduct(Long productId){
@@ -55,6 +57,16 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new BaseException("RA-C46-404"));
 
         productRepository.delete(productsEntity);
+    }
+
+    private ProductResponse convertToResponse(ProductsEntity productEntity) {
+        ProductResponse response = new ProductResponse();
+        response.setProductId(productEntity.getProductId());
+        response.setProductName(productEntity.getProductName());
+        response.setDescription(productEntity.getDescription());
+        response.setUnitPrice(productEntity.getUnitPrice());
+        response.setImage(productEntity.getImage());
+        return response;
     }
 
 }

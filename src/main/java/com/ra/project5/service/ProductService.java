@@ -9,6 +9,9 @@ public interface ProductService {
     List<ProductResponse> findProduct(String key);
     List<ProductResponse> findProductAndSort(int page, int size, String sortBy);
 
+    ProductResponse getProductById(Long productId);
+
     void deleteProduct(Long productId);
+
 
 }
