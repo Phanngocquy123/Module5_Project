@@ -49,6 +49,8 @@ public class ProductServiceImpl implements ProductService {
         return convertToResponse(productEntity);
     }
 
+    // 44 - Thêm mới sản phẩm
+    // 45 - Chỉnh sửa thông tin sản phẩm
 
     // 46 xóa sản phẩm
     @Override

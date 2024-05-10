@@ -14,6 +14,7 @@ public class CategoriesEntity {
     private Collection<ProductsEntity> productsByCategoryId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
     public long getCategoryId() {
         return categoryId;

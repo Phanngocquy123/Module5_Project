@@ -1,15 +1,15 @@
 package com.ra.project5.controller;
 
-import com.ra.project5.model.dto.response.NoticeResponse;
-import com.ra.project5.model.dto.response.ProductResponse;
-import com.ra.project5.model.dto.response.RoleResponse;
-import com.ra.project5.model.dto.response.UserResponse;
+import com.ra.project5.model.dto.request.CategoryRequest;
+import com.ra.project5.model.dto.response.*;
 import com.ra.project5.model.entity.UsersEntity;
+import com.ra.project5.service.CategoryService;
 import com.ra.project5.service.ProductService;
 import com.ra.project5.service.UserRoleService;
 import com.ra.project5.service.UserService;
 import com.ra.project5.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +27,8 @@ public class RoleAdmin {
     private UserDetailServiceImpl userDetailService;
     @Autowired
     private UserRoleService userRoleService;
+    @Autowired
+    private CategoryService categoryService;
 
     // 36 - Lấy ra danh sách người dùng +  phân trang + sắp xếp
     @GetMapping("/users")
@@ -106,12 +108,62 @@ public class RoleAdmin {
         return ResponseEntity.ok(product);
     }
 
+    // 44 - Thêm mới sản phẩm
+    // 45 - Chỉnh sửa thông tin sản phẩm
+
     // 46 - Xóa sản phẩm theo id
     @DeleteMapping("/products/delete/{productId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NoticeResponse> deleteProduct(@PathVariable Long productId){
         productService.deleteProduct(productId);
         NoticeResponse response = new NoticeResponse("Delete successfully !");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // 47 - Lấy về danh sách tất cả các danh muc + sắp xếp + phân trang
+    @GetMapping("/categories")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<CategoryResponse>> getAllCategories(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String sortBy
+    ){
+        List<CategoryResponse> categories = categoryService.findCategoryAndSort(page, size, sortBy);
+        return ResponseEntity.ok(categories);
+    }
+
+    // 48 - Lấy về thông tin danh mục theo id
+    @GetMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId){
+        CategoryResponse category = categoryService.getCategoryById(categoryId);
+        return ResponseEntity.ok(category);
+    }
+
+    // 49 - Thêm mới danh mục
+    @PostMapping("/categories")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponse> addCategory(@RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse response = categoryService.addCategory(categoryRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    // 50 - Chỉnh sửa thông tin danh mục
+    @PutMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponse> updateCategory(
+            @PathVariable Long categoryId,
+            @RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse updatedCategory = categoryService.updateCategory(categoryId, categoryRequest);
+        return ResponseEntity.ok(updatedCategory);
+    }
+
+    // 51 - Xóa danh mục
+    @DeleteMapping("/categories/{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NoticeResponse> deleteCategoryById(@PathVariable Long categoryId){
+        categoryService.deleteCategory(categoryId);
+        NoticeResponse response = new NoticeResponse("Delete success !");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
