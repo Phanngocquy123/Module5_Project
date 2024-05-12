@@ -1,6 +1,7 @@
 package com.ra.project5.controller;
 
 import com.ra.project5.model.dto.request.CategoryRequest;
+import com.ra.project5.model.dto.request.ProductRequest;
 import com.ra.project5.model.dto.response.*;
 import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.service.CategoryService;
@@ -11,9 +12,11 @@ import com.ra.project5.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -96,7 +99,7 @@ public class RoleAdmin {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size,
             @RequestParam(defaultValue = "productId") String sortBy) {
-        List<ProductResponse> products = productService.findProductAndSort(page, size, sortBy);
+        List<ProductResponse> products = productService.getProductAndSort(page, size, sortBy);
         return ResponseEntity.ok(products);
     }
 
@@ -109,6 +112,13 @@ public class RoleAdmin {
     }
 
     // 44 - Thêm mới sản phẩm
+    @PostMapping(value = "/products", consumes = {"multipart/form-data","application/*", MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponse> addNewProduct(@RequestPart ProductRequest request,
+                                                         @RequestPart("file")MultipartFile file){
+        ProductResponse response = productService.addNewProduct(request, file);
+        return  new ResponseEntity<>(response, HttpStatus.OK);
+    }
     // 45 - Chỉnh sửa thông tin sản phẩm
 
     // 46 - Xóa sản phẩm theo id

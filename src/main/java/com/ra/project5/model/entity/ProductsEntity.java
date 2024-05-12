@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.UUID;
 
 @Entity
 @Table(name = "products", schema = "project_module5", catalog = "")
@@ -25,6 +26,7 @@ public class ProductsEntity {
     private Collection<WishListsEntity> wishListsByProductId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     public long getProductId() {
         return productId;
@@ -34,6 +36,10 @@ public class ProductsEntity {
         this.productId = productId;
     }
 
+    @PrePersist
+    public void generateSku() {
+        this.sku = UUID.randomUUID().toString().replaceAll("-", "").substring(0, Math.min(100, 32));
+    }
     @Basic
     @Column(name = "sku")
     public String getSku() {

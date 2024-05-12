@@ -3,17 +3,20 @@ package com.ra.project5.controller;
 
 import com.ra.project5.model.dto.request.CheckoutRequest;
 import com.ra.project5.model.dto.request.ShoppingCartRequest;
+import com.ra.project5.model.dto.request.UserRequest;
 import com.ra.project5.model.dto.request.UserUpdateRequest;
 import com.ra.project5.model.dto.response.CheckoutResponse;
 import com.ra.project5.model.dto.response.NoticeResponse;
 import com.ra.project5.model.dto.response.ShoppingCartResponse;
 
 import com.ra.project5.model.dto.response.UserResponse;
+import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.service.CheckoutService;
 import com.ra.project5.service.ShoppingCartService;
 import com.ra.project5.service.impl.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -67,7 +70,7 @@ public class RoleUser {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 20 -  Xóa toàn bộ sản phẩm
+    // 20 -  Xóa toàn bộ sản phẩm trong giỏ hàng
     @DeleteMapping("/shopping-cart/delete-all")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<NoticeResponse> clearCart() {
@@ -87,7 +90,7 @@ public class RoleUser {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // 21 - Hiển thị thông tin người dùng
+    // 22 - Thông tin tài khoản người dùng
     @GetMapping("/account/show")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponse> checkout() {
@@ -95,13 +98,14 @@ public class RoleUser {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/account")
+    // 23 - Cập nhật thông tin người dùng
+    @PutMapping(value = "/account", consumes = {"multipart/form-data","application/*",MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserResponse> updateUser(@RequestBody UserUpdateRequest userUpdateRequest,
-                                                   @RequestParam(value = "file", required = false) MultipartFile file) {
-        System.out.println("888888888888888888888888888888888888888888888888888888888888888888888888");
-        UserResponse response = userDetailService.updateUser(userUpdateRequest, file);
+    public ResponseEntity<UserResponse> updateUser(@RequestPart UserUpdateRequest userRequest,
+                                                   @RequestPart("file") MultipartFile file) {
+        UserResponse response = userDetailService.updateUser(userRequest, file);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 }

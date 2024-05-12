@@ -38,16 +38,15 @@ public class PermitAll {
     @Autowired
     private ProductServiceImpl productService;
 
-
+    // 6 - Đăng kí tài khoản người dùng
     @PostMapping("/auth/sign-up")
     public ResponseEntity<NoticeResponse> register(@RequestBody UserRequest userRequest) {
         UsersEntity user = userDetailService.add(userRequest);
-        NoticeResponse response = new NoticeResponse("register successful !");
+        NoticeResponse response = new NoticeResponse("Register successful !");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
-
+    // 7 - Đăng nhập
     @PostMapping("/auth/sign-in")
     public ResponseEntity getToken(@RequestBody TokenRequest request) {
         try {
@@ -76,19 +75,20 @@ public class PermitAll {
             throw  new BaseException("RA-00-401");
         }
     }
-
+    // 9 - Tìm kiếm sản phẩm theo tên hoặc mô tả
     @GetMapping("/products/search")
     public ResponseEntity<List<ProductResponse>> findProductByName(@RequestParam("searchName") String searchName) {
         List<ProductResponse> productList = productService.findProduct(searchName);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
+    // 10 - Danh sách sản phẩm được bán + phân trang + sắp xếp
     @GetMapping("/products")
-    public ResponseEntity<List<ProductResponse>> findProductsAndSort(
+    public ResponseEntity<List<ProductResponse>> getListProductsAndSort(
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size,
             @RequestParam(value = "sort") String sortBy) {
-        List<ProductResponse> productList = productService.findProductAndSort(page, size, sortBy);
+        List<ProductResponse> productList = productService.getProductAndSort(page, size, sortBy);
         return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 

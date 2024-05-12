@@ -7,7 +7,6 @@ import com.ra.project5.model.dto.response.RoleResponse;
 import com.ra.project5.model.dto.response.UserResponse;
 import com.ra.project5.model.entity.RolesEntity;
 import com.ra.project5.model.entity.UserRoleEntity;
-import com.ra.project5.model.entity.UserRoleEntityPK;
 import com.ra.project5.model.entity.UsersEntity;
 import com.ra.project5.model.token.UserDetailsAdapter;
 import com.ra.project5.repository.RoleRepository;
@@ -16,7 +15,6 @@ import com.ra.project5.repository.UserRoleRepository;
 import com.ra.project5.service.FileService;
 import com.ra.project5.service.ShoppingCartService;
 import com.ra.project5.service.UserService;
-import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +48,6 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     FileService fileService;
 
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UsersEntity usersEntity = userRepository.findByUsername(username);
@@ -64,6 +58,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
         throw new UsernameNotFoundException("Username \"" + username + "\" not found!");
     }
 
+    // 6 - Đăng kí tài khoản người dùng
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UsersEntity add(UserRequest userRequest) {
@@ -117,7 +112,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
         return convertToResponse(usersEntity);
     }
 
-
+    // 23 - Cập nhật thông tin người dùng
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserResponse updateUser(UserUpdateRequest userRequest, MultipartFile file) {
@@ -132,14 +127,13 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             try {
                 // Lưu tệp tin vào thư mục uploads
                 fileService.save(file);
-                // Lưu tên tệp tin vào đối tượng người dùng
-                user.setAvatar(file.getOriginalFilename());
+                String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+                user.setAvatar(filename);
             } catch (Exception ex) {
-                // Xử lý ngoại lệ khi lưu tệp tin
-                throw new RuntimeException("Failed to save file", ex);
+                throw new BaseException("RA-C23-401");
             }
         }
-
         UsersEntity updatedUser = userRepository.save(user);
         return convertToResponse(updatedUser);
     }
@@ -196,9 +190,9 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             user.getUserRoleEntities().remove(userRole);
             userRoleRepository.delete(userRole);
         } else {
-           throw  new BaseException("RA-C37-401");
+            throw new BaseException("RA-C37-401");
         }
-      //  user.getUserRoleEntities().removeIf(u -> u.getRolesByRoleId().equals(role));
+        //  user.getUserRoleEntities().removeIf(u -> u.getRolesByRoleId().equals(role));
 
         userRepository.save(user);
     }
@@ -238,9 +232,6 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             userRolesMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(roleName);
         }
 
-
-
-
         return userRolesMap.entrySet().stream()
                 .map(entry -> {
                     RoleResponse roleResponse = new RoleResponse();
@@ -251,7 +242,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    public UserResponse convertToResponse(UsersEntity usersEntity){
+    public UserResponse convertToResponse(UsersEntity usersEntity) {
         UserResponse response = new UserResponse();
         response.setUsername(usersEntity.getUsername());
         response.setFullName(usersEntity.getFullName());

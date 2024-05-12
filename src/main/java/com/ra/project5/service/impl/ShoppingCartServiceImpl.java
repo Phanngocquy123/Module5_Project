@@ -35,7 +35,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private UserRepository userRepository;
 
     @Override
-    public UsersEntity userUsing(){
+    public UsersEntity userUsing() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UsersEntity user = userRepository.findByUsername(username);
@@ -86,7 +86,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCartResponse updateCartItemQuantity(Integer cartItemId, int quantity) {
-              // Tìm kiếm sản phẩm trong giỏ hàng
+        // Tìm kiếm sản phẩm trong giỏ hàng
         Optional<ShoppingCartEntity> cartItemOptional = shoppingCartRepository.findById(cartItemId);
         ShoppingCartEntity cartItem = cartItemOptional.orElseThrow(() -> new BaseException("RA-C18-404"));
 
@@ -149,9 +149,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
 
-
-
-
     private ShoppingCartResponse convertToResponse(ShoppingCartEntity shoppingCartEntity, ProductsEntity productsEntity) {
         ShoppingCartResponse response = new ShoppingCartResponse();
         response.setShoppingCartId(shoppingCartEntity.getShoppingCartId());
@@ -160,8 +157,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         response.setOrderQuantity(shoppingCartEntity.getOrderQuantity());
         return response;
     }
+
     @Override
-    public BigDecimal totalPrice(){
+    public BigDecimal totalPrice() {
         List<ShoppingCartEntity> shoppingCarts = shoppingCartRepository.findByUsersByUserId(userUsing());
         BigDecimal totalPrice = BigDecimal.ZERO;
         for (ShoppingCartEntity cartEntity : shoppingCarts) {
