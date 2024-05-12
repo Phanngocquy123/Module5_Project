@@ -35,8 +35,9 @@ public class CheckoutServiceImpl implements CheckoutService {
     private ProductRepository productRepository;
 
 
+
     @Override
-    public CheckoutResponse checkout(long addressId) {
+    public CheckoutResponse checkOut(long addressId) {
         UsersEntity user = shoppingCartService.userUsing();
         AddressesEntity address = addressRepository.findByAddressIdAndUsersByUserId(addressId, user);
         if (address == null) {
@@ -68,17 +69,20 @@ public class CheckoutServiceImpl implements CheckoutService {
         List<OrderDetailsEntity> orderDetailsList = new ArrayList<>();
         for (ShoppingCartEntity cartItem : cartItems) {
             OrderDetailsEntity orderDetail = new OrderDetailsEntity();
+            orderDetail.setOrderId(savedOrder.getOrderId());
+            orderDetail.setProductId(cartItem.getProductsByProductId().getProductId());
+
             orderDetail.setOrdersByOrderId(savedOrder);
             orderDetail.setProductsByProductId(cartItem.getProductsByProductId());
+
             orderDetail.setName(cartItem.getProductsByProductId().getProductName());
             orderDetail.setUnitPrice(cartItem.getProductsByProductId().getUnitPrice());
             orderDetail.setOrderQuantity(cartItem.getOrderQuantity());
-      //      orderDetailsList.add(orderDetail);
+            orderDetailsList.add(orderDetail);
         }
 
-        // Lưu danh sách chi tiết đơn hàng vào cơ sở dữ liệu
-     //   orderDetailRepository.saveAll(orderDetailsList);
-
+        orderDetailRepository.saveAll(orderDetailsList);
+        shoppingCartService.deleteAllCartItem();
         // Tạo CheckoutResponse
         CheckoutResponse response = new CheckoutResponse();
         response.setSerialNumber(savedOrder.getSerialNumber());

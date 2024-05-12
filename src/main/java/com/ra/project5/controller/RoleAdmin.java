@@ -29,8 +29,6 @@ public class RoleAdmin {
     @Autowired
     private UserDetailServiceImpl userDetailService;
     @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
     private CategoryService categoryService;
 
     // 36 - Lấy ra danh sách người dùng +  phân trang + sắp xếp
@@ -112,19 +110,28 @@ public class RoleAdmin {
     }
 
     // 44 - Thêm mới sản phẩm
-    @PostMapping(value = "/products", consumes = {"multipart/form-data","application/*", MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/products", consumes = {"multipart/form-data", "application/*", MediaType.MULTIPART_FORM_DATA_VALUE})
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductResponse> addNewProduct(@RequestPart ProductRequest request,
-                                                         @RequestPart("file")MultipartFile file){
+                                                         @RequestPart("file") MultipartFile file) {
         ProductResponse response = productService.addNewProduct(request, file);
-        return  new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     // 45 - Chỉnh sửa thông tin sản phẩm
+    @PutMapping(value = "/products/{productId}", consumes = {"multipart/form-data", "application/*", MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long productId,
+                                                         @RequestPart ProductRequest request,
+                                                         @RequestPart("file") MultipartFile file) {
+        ProductResponse response = productService.updateProduct(productId,request, file);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     // 46 - Xóa sản phẩm theo id
     @DeleteMapping("/products/delete/{productId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NoticeResponse> deleteProduct(@PathVariable Long productId){
+    public ResponseEntity<NoticeResponse> deleteProduct(@PathVariable Long productId) {
         productService.deleteProduct(productId);
         NoticeResponse response = new NoticeResponse("Delete successfully !");
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -137,7 +144,7 @@ public class RoleAdmin {
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam String sortBy
-    ){
+    ) {
         List<CategoryResponse> categories = categoryService.findCategoryAndSort(page, size, sortBy);
         return ResponseEntity.ok(categories);
     }
@@ -145,7 +152,7 @@ public class RoleAdmin {
     // 48 - Lấy về thông tin danh mục theo id
     @GetMapping("/categories/{categoryId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId){
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long categoryId) {
         CategoryResponse category = categoryService.getCategoryById(categoryId);
         return ResponseEntity.ok(category);
     }
@@ -171,7 +178,7 @@ public class RoleAdmin {
     // 51 - Xóa danh mục
     @DeleteMapping("/categories/{categoryId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NoticeResponse> deleteCategoryById(@PathVariable Long categoryId){
+    public ResponseEntity<NoticeResponse> deleteCategoryById(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         NoticeResponse response = new NoticeResponse("Delete success !");
         return new ResponseEntity<>(response, HttpStatus.OK);

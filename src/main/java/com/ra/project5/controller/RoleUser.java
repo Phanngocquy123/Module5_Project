@@ -83,9 +83,9 @@ public class RoleUser {
     @PostMapping("/shopping-cart/checkout")
     @PreAuthorize("hasRole('USER')")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<CheckoutResponse> checkout(@RequestBody CheckoutRequest request) {
+    public ResponseEntity<CheckoutResponse> checkOut(@RequestBody CheckoutRequest request) {
         long addressId = request.getAddressId();
-        CheckoutResponse response = checkoutService.checkout(addressId);
+        CheckoutResponse response = checkoutService.checkOut(addressId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

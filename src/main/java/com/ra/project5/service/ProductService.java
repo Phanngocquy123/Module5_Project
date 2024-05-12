@@ -13,6 +13,7 @@ public interface ProductService {
 
     ProductResponse getProductById(Long productId);
     ProductResponse addNewProduct(ProductRequest request, MultipartFile file);
+    ProductResponse updateProduct(Long productId, ProductRequest request, MultipartFile file);
     void deleteProduct(Long productId);
 
 

@@ -387,7 +387,7 @@
 					"response": []
 				},
 				{
-					"name": "/account/show",
+					"name": "22- /account/show",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -432,7 +432,7 @@
 					"response": []
 				},
 				{
-					"name": "/account/update",
+					"name": "23 -/account/update",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -477,7 +477,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:8080/api.myservice.com/v1/user/account/update",
+							"raw": "http://localhost:8080/api.myservice.com/v1/user/account",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -487,8 +487,7 @@
 								"api.myservice.com",
 								"v1",
 								"user",
-								"account",
-								"update"
+								"account"
 							]
 						}
 					},
@@ -890,6 +889,105 @@
 					"response": []
 				},
 				{
+					"name": "44- /products (add product)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "request",
+									"value": "{\n\"productName\":\"Sản phẩm C\",\n\"description\": \"mô tả \",\n\"unitPrice\" : 100,\n\"stockQuantity\": 200,\n\"categoryId\" : 2\n}\n",
+									"contentType": "application/json",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "/D:/DOWNLOAD D/aaaaa.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/api.myservice.com/v1/admin/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api.myservice.com",
+								"v1",
+								"admin",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "45 -/products/6 (update)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "request",
+									"value": "{\n\"productName\":\"Sản phẩm A\",\n\"description\": \"mô tả 2 \",\n\"unitPrice\" : 100,\n\"stockQuantity\": 200,\n\"categoryId\" : 2\n}",
+									"contentType": "application/json",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"contentType": "multipart/form-data",
+									"type": "file",
+									"src": "/D:/DOWNLOAD D/chip.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/api.myservice.com/v1/admin/products/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api.myservice.com",
+								"v1",
+								"admin",
+								"products",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "46 -/products/delete",
 					"request": {
 						"auth": {
@@ -914,7 +1012,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api.myservice.com/v1/admin/products/delete/2",
+							"raw": "http://localhost:8080/api.myservice.com/v1/admin/products/delete/6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -926,7 +1024,7 @@
 								"admin",
 								"products",
 								"delete",
-								"2"
+								"6"
 							]
 						}
 					},

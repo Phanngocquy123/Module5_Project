@@ -65,6 +65,25 @@ public class OrderDetailsEntity {
     public void setOrderQuantity(Integer orderQuantity) {
         this.orderQuantity = orderQuantity;
     }
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id", insertable = false, updatable = false)
+    public OrdersEntity getOrdersByOrderId() {
+        return ordersByOrderId;
+    }
+
+    public void setOrdersByOrderId(OrdersEntity ordersByOrderId) {
+        this.ordersByOrderId = ordersByOrderId;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", insertable = false, updatable = false)
+    public ProductsEntity getProductsByProductId() {
+        return productsByProductId;
+    }
+
+    public void setProductsByProductId(ProductsEntity productsByProductId) {
+        this.productsByProductId = productsByProductId;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -93,23 +112,5 @@ public class OrderDetailsEntity {
         return result;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id", nullable = false)
-    public OrdersEntity getOrdersByOrderId() {
-        return ordersByOrderId;
-    }
 
-    public void setOrdersByOrderId(OrdersEntity ordersByOrderId) {
-        this.ordersByOrderId = ordersByOrderId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
-    public ProductsEntity getProductsByProductId() {
-        return productsByProductId;
-    }
-
-    public void setProductsByProductId(ProductsEntity productsByProductId) {
-        this.productsByProductId = productsByProductId;
-    }
 }

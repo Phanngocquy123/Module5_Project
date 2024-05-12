@@ -77,12 +77,12 @@ public class ProductServiceImpl implements ProductService {
         CategoriesEntity category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new BaseException("RA-C44-404"));
         product.setCategoriesByCategoryId(category);
-        if (file != null && !file.isEmpty()){
+        if (file != null && !file.isEmpty()) {
             try {
                 fileService.save(file);
                 String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
                 product.setImage(filename);
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 throw new BaseException("RA-C44-401");
             }
         }
@@ -90,11 +90,40 @@ public class ProductServiceImpl implements ProductService {
 
         return convertToResponse(savedProduct);
     }
+
     // 45 - Chỉnh sửa thông tin sản phẩm
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ProductResponse updateProduct(Long productId, ProductRequest request, MultipartFile file) {
+        ProductsEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new BaseException("RA-43-401"));
+
+        product.setProductName(request.getProductName());
+        product.setDescription(request.getDescription());
+        product.setUnitPrice(request.getUnitPrice());
+        product.setStockQuantity(request.getStockQuantity());
+
+        CategoriesEntity category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new BaseException("RA-C44-404"));
+        product.setCategoriesByCategoryId(category);
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                fileService.save(file);
+                String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+                product.setImage(filename);
+            } catch (Exception ex) {
+                throw new BaseException("RA-C44-401");
+            }
+        }
+
+        ProductsEntity updatedProduct = productRepository.save(product);
+        return convertToResponse(updatedProduct);
+    }
 
     // 46 xóa sản phẩm
     @Override
-    public void deleteProduct(Long productId){
+    public void deleteProduct(Long productId) {
         ProductsEntity productsEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new BaseException("RA-C46-404"));
 
