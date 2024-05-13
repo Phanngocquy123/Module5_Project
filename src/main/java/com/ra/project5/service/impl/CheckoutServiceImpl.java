@@ -31,10 +31,6 @@ public class CheckoutServiceImpl implements CheckoutService {
 
     @Autowired
     private AddressRepository addressRepository;
-    @Autowired
-    private ProductRepository productRepository;
-
-
 
     @Override
     public CheckoutResponse checkOut(long addressId) {
@@ -43,7 +39,6 @@ public class CheckoutServiceImpl implements CheckoutService {
         if (address == null) {
             throw new BaseException("RA-C21-400");
         }
-
         // Tạo đơn hàng
         OrdersEntity order = new OrdersEntity();
         order.setUsersByUserId(user);

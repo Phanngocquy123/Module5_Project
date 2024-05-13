@@ -126,7 +126,7 @@
 					"response": []
 				},
 				{
-					"name": "/products (findAndSort)",
+					"name": "/products (getAndSort)",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},

@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {      //Json Web Token
-    private final long EXPIRED = (1000 * 60 * 4);
+    private final long EXPIRED = (1000 * 60 * 10);
     private final String JWT_KEY = "RikkeiAcademySecretKey";
 
     public String generateToken(UserDetails userDetails) {

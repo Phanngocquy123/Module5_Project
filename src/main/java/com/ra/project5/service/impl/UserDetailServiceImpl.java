@@ -63,7 +63,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     @Transactional(rollbackFor = Exception.class)
     public UsersEntity add(UserRequest userRequest) {
         if (!userRequest.getPassword().equals(userRequest.getConfirmPassword())) {
-            throw new BaseException("RA-00-400");
+            throw new BaseException("RA-C06-400");
         }
 
         // Kiểm tra xem các vai trò được cung cấp có tồn tại không
@@ -73,7 +73,7 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             if (role != null) {
                 roles.add(role);
             } else {
-                throw new BaseException("RA-01-400");
+                throw new BaseException("RA-C06-2-400");
             }
         }
         // Mã hóa mật khẩu
@@ -154,11 +154,9 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addRoleToUser(long userId, long roleId) {
-        // Tìm người dùng dựa trên ID
         UsersEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException("RA-C37-401"));
 
-        // Tìm vai trò dựa trên ID
         RolesEntity role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new BaseException("RA-C37-401"));
 
@@ -167,12 +165,10 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
             throw new BaseException("RA-C37-2-401");
         }
 
-        // Tạo một UserRoleEntity mới
         UserRoleEntity newUserRole = new UserRoleEntity();
         newUserRole.setUserId(userId);
         newUserRole.setRoleId(roleId);
 
-        // Lưu thay đổi vào cơ sở dữ liệu
         userRoleRepository.save(newUserRole);
     }
 
@@ -226,9 +222,6 @@ public class UserDetailServiceImpl implements UserService, UserDetailsService {
         for (UserRoleEntity userRole : userRoles) {
             long userId = userRole.getUserId();
             String roleName = userRole.getRolesByRoleId().getRoleName();
-
-            // Nếu user đã tồn tại trong Map, thêm vai trò mới vào danh sách
-            // Nếu không, tạo một cặp mới với userId và vai trò
             userRolesMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(roleName);
         }
 

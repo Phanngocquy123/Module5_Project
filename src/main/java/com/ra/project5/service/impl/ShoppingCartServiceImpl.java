@@ -59,7 +59,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Optional<ProductsEntity> productOptional = productRepository.findById(shoppingCartRequest.getProductId());
         ProductsEntity product = productOptional.orElseThrow(() -> new BaseException("RA-SP1-404"));
 
-        // Kiểm tra số lượng tồn kho
+        // Check số lượng tồn kho
         if (product.getStockQuantity() < shoppingCartRequest.getOrderQuantity()) {
             throw new BaseException("RA-SP2-400");
         }
@@ -68,7 +68,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         product.setStockQuantity(remainingStock);
         productRepository.save(product);
 
-        // Kiểm tra trong giỏ hàng đã tồn tại hay chưa
+        // Check trong giỏ hàng đã tồn tại hay chưa
         ShoppingCartEntity existingItem = shoppingCartRepository.findByUsersByUserIdAndProductsByProductId(userUsing(), product);
         if (existingItem != null) {
             existingItem.setOrderQuantity(existingItem.getOrderQuantity() + shoppingCartRequest.getOrderQuantity());
@@ -90,7 +90,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Optional<ShoppingCartEntity> cartItemOptional = shoppingCartRepository.findById(cartItemId);
         ShoppingCartEntity cartItem = cartItemOptional.orElseThrow(() -> new BaseException("RA-C18-404"));
 
-        // Kiểm tra xem có phải giỏ hàng của user đang sử dụng hay không
+        // Check xem có phải giỏ hàng của user đang sử dụng hay không
         if (!cartItem.getUsersByUserId().equals(userUsing())) {
             throw new BaseException("RA-C18-403");
         }
@@ -119,7 +119,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCartEntity cartItem = shoppingCartRepository.findById(cartItemId)
                 .orElseThrow(() -> new BaseException("RA-C19-404"));
 
-        // Kiểm tra xem mục giỏ hàng có thuộc về người dùng hiện tại không
+        // Check xem mục giỏ hàng có thuộc về người dùng hiện tại không
         if (!cartItem.getUsersByUserId().equals(userUsing())) {
             throw new BaseException("RA-C19-403");
         }
